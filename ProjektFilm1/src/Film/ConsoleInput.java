@@ -1,4 +1,4 @@
-package dbconnection;
+package Film;
 
 import java.util.Scanner;
 
