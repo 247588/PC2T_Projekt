@@ -62,81 +62,60 @@ public static void zapisData(List<HranyFilm> hraneFilmy, List<AnimovanyFilm> ani
     }
 }
       public static void nactiData(List<AnimovanyFilm> animovanefilmy, List<HranyFilm> hranefilmy, List<Herci> herci)
-    {   try
-        {
-            Class.forName("org.sqlite.JDBC");
-            String url = "jdbc:sqlite:db/film.db";
-            Connection con = DriverManager.getConnection(url);
-            Statement statement = con.createStatement();
-            String query = "SELECT * FROM film";
-            ResultSet rs = statement.executeQuery(query);
-            while(rs.next())
-            {
-                int druh = rs.getInt(1);
-                if(druh == 1)
-                {
-                    String nazev = rs.getString(2);
-                    String reziser = rs.getString(3);
-                    int rokVydani = rs.getInt(4);
-                    List<String> seznamHercu= new ArrayList<String>(); 
-                    String herciText = rs.getString(5);
-                    if(!herciText.equals("nic")){
-                        for (String herec : herciText.split(";")){
-                            if(herec !=""){
-                                herec = ConsoleInput.upravJmeno(herec);
-                                seznamHercu.add(herec);
-                                Boolean nalezeno = false;
-                                for (Herci her : herci){
-                                    if(her.getJmeno().equals(herec)){
-                                        her.pridejFilm(nazev, seznamHercu);
-                                        nalezeno = true;
-                                        break;
-                                    }
-                                }
-                                if(!nalezeno){
-                                    herci.add(new Herci(herec));
-                                }
-                            }
-                        }
-                    }
-                    int hodnoceni = rs.getInt(6);
-                    String slovniHodnoceni = rs.getString(7);
-                    HranyFilm film =new HranyFilm(nazev, reziser, rokVydani, seznamHercu, hodnoceni, slovniHodnoceni);
-                    hranefilmy.add(film);
-                }
-                else
-                {
-                    String nazev = rs.getString(2);
-                    String reziser = rs.getString(3);
-                    int rokVydani = rs.getInt(4);
-                    List<String> seznamHercu= new ArrayList<String>(); 
-                    String herciText = rs.getString(5);
-                    for (String herec : herciText.split(";")){
+    {  
+    try {
+    Class.forName("org.sqlite.JDBC");
+    String url = "jdbc:sqlite:db/film.db";
+    Connection connection = DriverManager.getConnection(url);
+    Statement statement = connection.createStatement();
+    ResultSet resultSet = statement.executeQuery("SELECT * FROM film");
+            while (resultSet.next()) {
+            int druh = resultSet.getInt("druh");
+            String nazev = resultSet.getString("nazev");
+            String reziser = resultSet.getString("reziser");
+            int rokVydani = resultSet.getInt("rok");
+            String herciText = resultSet.getString("herci");
+            List<String> seznamHercu = new ArrayList<>();
+            
+            if (!"nic".equals(herciText)) {
+                for (String herec : herciText.split(";")) {
+                    if (!"".equals(herec)) {
                         herec = ConsoleInput.upravJmeno(herec);
                         seznamHercu.add(herec);
-                        Boolean nalezeno = false;
-                        for (Herci her : herci){
-                            if(her.getJmeno().equals(herec)){
+                        
+                        boolean nalezeno = false;
+                        for (Herci her : herci) {
+                            if (her.getJmeno().equals(herec)) {
                                 her.pridejFilm(nazev, seznamHercu);
                                 nalezeno = true;
                                 break;
                             }
                         }
-                        if(!nalezeno){
+                        
+                        if (!nalezeno) {
                             herci.add(new Herci(herec));
                         }
                     }
-                    int hodnoceni = rs.getInt(6);
-                    String slovniHodnoceni = rs.getString(7);
-                    int doporucenyVek = rs.getInt(8);
-                    AnimovanyFilm film =new AnimovanyFilm(nazev, reziser, rokVydani, seznamHercu, hodnoceni, slovniHodnoceni,doporucenyVek);
-                    animovanefilmy.add(film);
                 }
             }
-            con.close();
-        }catch (Exception e) {
-            System.err.println("Exception: " + e.getMessage());
+            
+            int hodnoceni = resultSet.getInt("hodnoceni");
+            String slovniHodnoceni = resultSet.getString("hodnocenislovne");
+            
+            if (druh == 1) {
+                HranyFilm hranyFilm = new HranyFilm(nazev, reziser, rokVydani, seznamHercu, hodnoceni, slovniHodnoceni);
+                hranefilmy.add(hranyFilm);
+            } else {
+                int doporucenyVek = resultSet.getInt("vek");
+                AnimovanyFilm animovanyFilm = new AnimovanyFilm(nazev, reziser, rokVydani, seznamHercu, hodnoceni, slovniHodnoceni, doporucenyVek);
+                animovanefilmy.add(animovanyFilm);
+            }
         }
+        
+    } catch (SQLException e) {
+        System.err.println("SQLException: " + e.getMessage());
+    } catch (Exception e) {
+        System.err.println("Exception: " + e.getMessage());
     }
-
+    }
 }
