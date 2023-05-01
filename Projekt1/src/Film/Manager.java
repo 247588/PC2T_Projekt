@@ -26,17 +26,6 @@ public class Manager {
         System.out.print("Zadejte rok vydání: ");
         int rok = scanner.nextInt();
         scanner.nextLine();
-
-        System.out.print("Zadejte počet herců nebo animatorů: ");
-        int pocet = scanner.nextInt();
-        scanner.nextLine();
-
-        ArrayList<String> seznamHercu = new ArrayList<>();
-        for (int i = 0; i < pocet; i++) {
-            System.out.print("Zadejte jméno herce nebo animátora: ");
-            String jmeno = scanner.nextLine();
-            seznamHercu.add(jmeno);
-        }
         
         System.out.print("Je film animovaný? (ano/ne) ");
         String odpoved = scanner.nextLine();
@@ -45,17 +34,41 @@ public class Manager {
             animovany = true;
         }
 
-        
-        if (animovany) {
-            System.out.print("Zadejte doporučený věk pro film: ");
+        if(animovany = true) {
+             System.out.print("Zadejte počet animatorů: ");
+        int pocet = scanner.nextInt();
+        scanner.nextLine();
+
+        ArrayList<String> seznamHercu = new ArrayList<>();
+        for (int i = 0; i < pocet; i++) {
+            System.out.print("Zadejte jméno animátora: ");
+            String jmeno = scanner.nextLine();
+            seznamHercu.add(jmeno);
+        }
+            
+         System.out.print("Zadejte doporučený věk pro film: ");
             int vek = scanner.nextInt();
             scanner.nextLine();
             animovanyFilmy.add(new AnimovanyFilm(nazev, reziser, rok, seznamHercu,vek));
-        } else {
-            hraneFilmy.add(new HranyFilm(nazev, reziser, rok, seznamHercu));
+        
+            System.out.println("Byl vytvořen film: " +nazev);
         }
+        
+        if (animovany = false) {
+        System.out.print("Zadejte počet herců: ");
+        int pocet = scanner.nextInt();
+        scanner.nextLine();
 
+        ArrayList<String> seznamHercu = new ArrayList<>();
+        for (int i = 0; i < pocet; i++) {
+            System.out.print("Zadejte jméno herce: ");
+            String jmeno = scanner.nextLine();
+            seznamHercu.add(jmeno);
+        }
+        hraneFilmy.add(new HranyFilm(nazev, reziser, rok, seznamHercu));
+        
         System.out.println("Byl vytvořen film: " +nazev);
+        }
     }
     public static void upravitfilm(List<HranyFilm> hraneFilmy, List<AnimovanyFilm> animovanyFilmy) {
         Scanner scanner = new Scanner(System.in);
@@ -431,5 +444,3 @@ public static void filmztxt(List<HranyFilm> hraneFilmy, List<AnimovanyFilm> anim
 }
 
 }
-
-
