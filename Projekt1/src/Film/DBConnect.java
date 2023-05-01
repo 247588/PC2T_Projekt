@@ -6,51 +6,61 @@ import java.util.ArrayList;
 
 public class DBConnect {
    
-      public static void zapisData(List<HranyFilm> hranefilmy,List<AnimovanyFilm> animovanefilmy){   
-        try {
-            Class.forName("org.sqlite.JDBC");
-            String url = "jdbc:sqlite:db/film.db";
-            Connection con = DriverManager.getConnection(url);
-            String sql = "DELETE FROM film";
-            PreparedStatement statement = con.prepareStatement(sql);
-            statement.executeUpdate();
-            sql = "INSERT INTO film (druh, nazev, reziser, rok, herci, hodnoceni, hodnocenislovne) VALUES (?, ?, ?, ?, ?, ?, ?)";
-            statement = con.prepareStatement(sql); 
-            for (HranyFilm film : hranefilmy){
-                statement.setInt(1, 1);
-                statement.setString(2, film.getNazev());
-                statement.setString(3, film.getReziser());
-                statement.setInt(4, film.getRokVydani());
-               statement.setString(5, Herci.vytvoritSeznam(film.getSeznamHercu())); 
-                statement.setInt(6, film.getHodnoceni());
-                statement.setString(7, film.getHodnoceniSlovne());
-                statement.executeUpdate();
-            }
-            sql = "INSERT INTO film(druh,nazev,reziser,rok,herci,hodnoceni,hodnocenislovne,vek)VALUES(?,?,?,?,?,?,?,?)";
-            statement = con.prepareStatement(sql); 
-            for (AnimovanyFilm film : animovanefilmy) {
-                statement.setInt(1, 2);
-                statement.setString(2, film.getNazev());
-                statement.setString(3, film.getReziser());
-                statement.setInt(4, film.getRokVydani());
-                if(!film.getSeznamHercu().isEmpty()){
-                    statement.setString(5, Herci.vytvoritSeznam(film.getSeznamHercu()));
-                }
-                else{
-                    statement.setString(5, "nic");
-                }
-                statement.setInt(6, film.getHodnoceni());
-                statement.setString(7, film.getSlovniHodnoceni());
-                statement.setInt(8, film.getDoporucenyVek());
-                statement.executeUpdate();
-            }
-            statement.close();
-            con.close();
-        } catch (SQLException | ClassNotFoundException e) {
-            System.err.println("Error executing SQL statement.");
-            e.printStackTrace();
+public static void zapisData(List<HranyFilm> hraneFilmy, List<AnimovanyFilm> animovaneFilmy) {
+    final String DB_URL = "jdbc:sqlite:db/film.db";
+
+    try (Connection conn = DriverManager.getConnection(DB_URL);
+         Statement stmt = conn.createStatement()) {
+
+       
+        String deleteSql = "DELETE FROM film";
+        stmt.executeUpdate(deleteSql);
+
+       
+        String insertSql = "INSERT INTO film (druh, nazev, reziser, rok, herci, hodnoceni, hodnocenislovne, vek) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        PreparedStatement prepStmt = conn.prepareStatement(insertSql);
+
+     
+        for (HranyFilm film : hraneFilmy) {
+            prepStmt.setInt(1, 1);
+            prepStmt.setString(2, film.getNazev());
+            prepStmt.setString(3, film.getReziser());
+            prepStmt.setInt(4, film.getRokVydani());
+            prepStmt.setString(5, Herci.vytvoritSeznam(film.getSeznamHercu()));
+            prepStmt.setInt(6, film.getHodnoceni());
+            prepStmt.setString(7, film.getHodnoceniSlovne());
+            prepStmt.setNull(8, Types.INTEGER);
+            prepStmt.executeUpdate();
         }
+
+     
+        for (AnimovanyFilm film : animovaneFilmy) {
+            prepStmt.setInt(1, 2);
+            prepStmt.setString(2, film.getNazev());
+            prepStmt.setString(3, film.getReziser());
+            prepStmt.setInt(4, film.getRokVydani());
+
+            if (!film.getSeznamHercu().isEmpty()) {
+                prepStmt.setString(5, Herci.vytvoritSeznam(film.getSeznamHercu()));
+            } else {
+                prepStmt.setString(5, "nic");
+            }
+
+            prepStmt.setInt(6, film.getHodnoceni());
+            prepStmt.setString(7, film.getSlovniHodnoceni());
+            prepStmt.setInt(8, film.getDoporucenyVek());
+            prepStmt.executeUpdate();
+        }
+
+        prepStmt.close();
+        System.out.println("Data saved successfully.");
+
+    } catch (SQLException e) {
+        System.err.println("Error executing SQL statement.");
+        e.printStackTrace();
     }
+}
       public static void nactiData(List<AnimovanyFilm> animovanefilmy, List<HranyFilm> hranefilmy, List<Herci> herci)
     {   try
         {
