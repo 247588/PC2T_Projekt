@@ -1,0 +1,7 @@
+Druh : (cislo) 
+Název: (nazev filmu)
+Režisér: (jmeno rezisera) 
+Rok vydání: (rok vydani) 
+Herci: (jmena hercu oddelene carkou) 
+Hodnocení: (cislo) 
+Slovni hodnoceni: (slovni hodnoceni)
